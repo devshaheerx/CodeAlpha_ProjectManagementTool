@@ -1,8 +1,16 @@
 # Orbit — Project Management Tool
 
-A collaborative project management tool in the spirit of Trello and Asana, built with the **MERN stack** and **Socket.io** for real-time collaboration.
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express_5-339933?logo=node.js&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-real--time-010101?logo=socket.io&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)
+
+A collaborative project management tool in the spirit of Trello and Asana, built with the **MERN stack** and **Socket.io** for real-time collaboration. Create group projects, assign tasks on a drag-and-drop Kanban board, and discuss work in live comment threads.
 
 Built by **Syed Shaheer Ahmed** for **CodeAlpha — Full Stack Development Internship, Task 3**.
+
+**Live demo:** _coming soon_ · **Demo login:** `shaheer@demo.com` / `password123`
 
 ---
 
@@ -36,6 +44,7 @@ Built by **Syed Shaheer Ahmed** for **CodeAlpha — Full Stack Development Inter
 - Presence: see who else is on the board
 
 **Usability**
+- In-app confirmation dialogs before anything is deleted (tasks, comments, columns, projects, members), with Cancel selected by default to prevent accidents
 - Drag and drop between and within columns: mouse on desktop, press-and-hold on phones
 - Dashboard with progress bars, an "Assigned to you" list and overdue / due-soon counts
 - Search and filter by text, priority or "assigned to me"
@@ -88,21 +97,21 @@ CodeAlpha_ProjectManagementTool/
 │       └── utils/                # token, realtime emit helpers, notify, HttpError
 └── client/
     └── src/
-        ├── context/              # Auth, Socket, Theme
+        ├── context/              # Auth, Socket, Theme, Confirm (in-app dialogs)
         ├── pages/                # Login, Register, Dashboard, ProjectBoard
-        ├── components/           # Column, TaskCard, TaskModal, MembersModal, NotificationBell, ...
+        ├── components/           # Column, TaskCard, TaskModal, CreateTaskModal, MembersModal, NotificationBell, ...
         └── lib/                  # api (axios), utils
 ```
 
 ## Getting started
 
-**Prerequisites:** Node.js 18+ and a MongoDB database (MongoDB Atlas free tier or local MongoDB).
+**Prerequisites:** Node.js 20.19+ (22 or 24 LTS recommended) and a MongoDB database (MongoDB Atlas free tier or local MongoDB).
 
 ### 1. Backend
 
 ```bash
 cd server
-cp .env.example .env      # then fill in MONGO_URI and JWT_SECRET
+cp .env.example .env      # Windows: copy .env.example .env — then fill in MONGO_URI and JWT_SECRET
 npm install
 npm run seed              # optional: demo users, projects, tasks and comments
 npm run dev               # http://localhost:5000
