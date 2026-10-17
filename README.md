@@ -229,6 +229,6 @@ Because the client and API are on different domains, the auth cookie is sent wit
 
 ## Author
 
-**Syed Shaheer Ahmed** · [LinkedIn](https://linkedin.com/in/syedshaheerahmed) · [GitHub](https://github.com/devshaheerx)
+**Syed Shaheer Ahmed** · [LinkedIn](https://www.linkedin.com/in/syed-shaheer-ahmed-505a64332/) · [GitHub](https://github.com/devshaheerx)
 
 CodeAlpha Full Stack Development Internship (Task 3: Project Management Tool)
