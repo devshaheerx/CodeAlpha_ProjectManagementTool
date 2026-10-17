@@ -10,7 +10,7 @@ A collaborative project management tool in the spirit of Trello and Asana, built
 
 Built by **Syed Shaheer Ahmed** for **CodeAlpha — Full Stack Development Internship, Task 3**.
 
-**Live demo:** _coming soon_ · **Demo login:** `shaheer@demo.com` / `password123`
+**Demo login** (after running `npm run seed`): `shaheer@demo.com` / `password123`
 
 ---
 
@@ -220,9 +220,9 @@ The socket authenticates with the same httpOnly JWT cookie as the REST API. Each
 | `notification:new` | user | populated notification |
 | `project:added` / `project:removed` | user | `{ projectId }` |
 
-## Deployment
+## Deployment (optional)
 
-WebSockets need a long-running server, so the **API goes on Render** (or Railway) and the **client on Vercel**. Vercel serverless functions can't hold Socket.io connections.
+The project runs fully on your machine as described in **Getting started**. If you want to host it, note that WebSockets need a long-running server, so the **API goes on Render** (or Railway) and the **client on Vercel**. Vercel serverless functions can't hold Socket.io connections.
 
 **Backend on Render**
 1. New → Web Service → connect this repo, root directory `server`, build `npm install`, start `npm start`. A `render.yaml` blueprint is included.
