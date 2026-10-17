@@ -1,0 +1,19 @@
+# Render Blueprint for the API (WebSockets need a long-running server, so the
+# backend goes on Render; the React client goes on Vercel).
+services:
+  - type: web
+    name: codealpha-pm-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        sync: false
