@@ -25,6 +25,7 @@ import TaskModal from '../components/TaskModal';
 import MembersModal from '../components/MembersModal';
 import CreateTaskModal from '../components/CreateTaskModal';
 import ProjectFormModal from '../components/ProjectFormModal';
+import { useConfirm } from '../context/ConfirmContext';
 
 const byOrder = (a, b) => a.order - b.order;
 
@@ -33,6 +34,7 @@ export default function ProjectBoard() {
   const { user } = useAuth();
   const socket = useSocket();
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [project, setProject] = useState(null);
@@ -337,19 +339,45 @@ export default function ProjectBoard() {
   };
 
   const deleteColumn = async (column) => {
-    if (!window.confirm(`Delete the "${column.name}" column?`)) return;
+    // Explain up front instead of asking and then failing.
+    const count = tasks.filter((t) => idOf(t.column) === column._id).length;
+    if (count > 0) {
+      toast.error(`Move or delete the ${count} task${count === 1 ? '' : 's'} in "${column.name}" first`);
+      return;
+    }
+    if (project.columns.length <= 1) {
+      toast.error('A board needs at least one column');
+      return;
+    }
+    const ok = await confirm({
+      title: `Delete "${column.name}" column?`,
+      message: 'The column will be removed from the board for everyone.',
+      confirmText: 'Delete column',
+      icon: 'delete',
+    });
+    if (!ok) return;
     try {
       const res = await api.delete(`/projects/${projectId}/columns/${column._id}`);
       applyProject(res.data.project);
+      toast.success(`Column "${column.name}" deleted`);
     } catch (err) {
       toast.error(errMsg(err));
     }
   };
 
   const deleteProject = async () => {
-    if (!window.confirm(`Delete "${project.name}" and all of its tasks and comments? This can't be undone.`)) return;
+    const ok = await confirm({
+      title: `Delete "${project.name}"?`,
+      message: `This permanently deletes the project with all ${tasks.length} task${
+        tasks.length === 1 ? '' : 's'
+      } and their comments for every member. This can't be undone.`,
+      confirmText: 'Delete project',
+      icon: 'delete',
+    });
+    if (!ok) return;
     try {
       await api.delete(`/projects/${projectId}`);
+      setShowSettings(false);
       toast.success('Project deleted');
       navigate('/');
     } catch (err) {

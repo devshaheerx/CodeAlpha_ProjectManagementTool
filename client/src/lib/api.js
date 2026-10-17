@@ -13,4 +13,10 @@ export function setSocketId(id) {
   else delete api.defaults.headers.common['x-socket-id'];
 }
 
-export const errMsg = (err) => err?.response?.data?.message || err?.message || 'Something went wrong';
+export const errMsg = (err) => {
+  const status = err?.response?.status;
+  if (!err?.response || status === 502 || status === 503 || status === 504) {
+    return "Can't reach the server. Make sure the backend is running and connected to MongoDB.";
+  }
+  return err.response.data?.message || err.message || 'Something went wrong';
+};

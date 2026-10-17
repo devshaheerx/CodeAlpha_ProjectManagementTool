@@ -5,6 +5,7 @@ import Modal from './Modal';
 import Avatar from './Avatar';
 import { api, errMsg } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useConfirm } from '../context/ConfirmContext';
 
 const ROLE_STYLES = {
   owner: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300',
@@ -14,6 +15,7 @@ const ROLE_STYLES = {
 
 export default function MembersModal({ open, onClose, project, role, onProjectChange, onLeft }) {
   const { user } = useAuth();
+  const confirm = useConfirm();
   const [email, setEmail] = useState('');
   const [newRole, setNewRole] = useState('member');
   const [busy, setBusy] = useState(false);
@@ -48,14 +50,28 @@ export default function MembersModal({ open, onClose, project, role, onProjectCh
 
   const remove = async (member) => {
     const self = member.user._id === user._id;
-    const msg = self ? `Leave "${project.name}"?` : `Remove ${member.user.name} from this project? They'll be unassigned from its tasks.`;
-    if (!window.confirm(msg)) return;
+    const ok = await confirm(
+      self
+        ? {
+            title: `Leave "${project.name}"?`,
+            message: "You'll lose access to this board and be unassigned from its tasks. An admin can add you back later.",
+            confirmText: 'Leave project',
+            icon: 'leave',
+          }
+        : {
+            title: `Remove ${member.user.name}?`,
+            message: `They'll lose access to "${project.name}" and be unassigned from all of its tasks.`,
+            confirmText: 'Remove member',
+            icon: 'remove',
+          }
+    );
+    if (!ok) return;
     try {
       const res = await api.delete(`/projects/${project._id}/members/${member.user._id}`);
       if (self) onLeft();
       else {
         onProjectChange(res.data.project);
-        toast.success('Member removed');
+        toast.success(`${member.user.name} removed from the project`);
       }
     } catch (err) {
       toast.error(errMsg(err));

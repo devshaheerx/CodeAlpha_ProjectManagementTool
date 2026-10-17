@@ -9,11 +9,13 @@ import { api, errMsg } from '../lib/api';
 import { PRIORITIES, idOf, timeAgo, toDateInput } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 import { useSocket, useSocketEvent } from '../context/SocketContext';
+import { useConfirm } from '../context/ConfirmContext';
 
 /* ------------------------- Comment thread (live) ------------------------- */
 
 function Comments({ task, canModerate, onCountChange }) {
   const { user } = useAuth();
+  const confirm = useConfirm();
   const socket = useSocket();
   const [comments, setComments] = useState(null);
   const [text, setText] = useState('');
@@ -135,10 +137,18 @@ function Comments({ task, canModerate, onCountChange }) {
   };
 
   const remove = async (c) => {
+    const ok = await confirm({
+      title: 'Delete comment?',
+      message: idOf(c.author) === user._id ? 'Your comment will be removed for everyone.' : `${c.author?.name}'s comment will be removed for everyone.`,
+      confirmText: 'Delete',
+      icon: 'delete',
+    });
+    if (!ok) return;
     try {
       const res = await api.delete(`/comments/${c._id}`);
       setComments((prev) => prev.filter((x) => x._id !== c._id));
       onCountChange(res.data.commentCount);
+      toast.success('Comment deleted');
     } catch (err) {
       toast.error(errMsg(err));
     }
@@ -221,6 +231,7 @@ function Comments({ task, canModerate, onCountChange }) {
 
 export default function TaskModal({ task, project, role, onClose, onUpdated, onDeleted, onMove }) {
   const { user } = useAuth();
+  const confirm = useConfirm();
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description || '');
   const [editingDesc, setEditingDesc] = useState(false);
@@ -252,7 +263,14 @@ export default function TaskModal({ task, project, role, onClose, onUpdated, onD
   };
 
   const remove = async () => {
-    if (!window.confirm(`Delete "${task.title}"? This also removes its comments.`)) return;
+    const n = task.commentCount || 0;
+    const ok = await confirm({
+      title: 'Delete this task?',
+      message: `"${task.title}"${n ? ` and its ${n} comment${n === 1 ? '' : 's'}` : ''} will be permanently deleted for everyone on the board.`,
+      confirmText: 'Delete task',
+      icon: 'delete',
+    });
+    if (!ok) return;
     try {
       await api.delete(`/tasks/${task._id}`);
       toast.success('Task deleted');

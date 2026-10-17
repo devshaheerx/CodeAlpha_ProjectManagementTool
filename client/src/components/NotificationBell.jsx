@@ -30,7 +30,13 @@ export default function NotificationBell() {
   const onNew = useCallback((n) => {
     setItems((prev) => [n, ...prev.filter((x) => x._id !== n._id)].slice(0, 30));
     setUnread((u) => u + 1);
-    toast(n.message, { icon: '🔔' });
+    toast(n.message, {
+      icon: (
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300">
+          <Bell size={14} />
+        </span>
+      ),
+    });
   }, []);
   useSocketEvent('notification:new', onNew);
 
